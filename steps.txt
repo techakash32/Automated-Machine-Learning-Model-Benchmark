@@ -1,0 +1,150 @@
+═══════════════════════════════════════════════════════════
+       ML PIPELINE – STEP BY STEP SAMAJH
+═══════════════════════════════════════════════════════════
+
+STEP 1: DATASET LOAD
+──────────────────────────────────────────────────────────
+- CSV file ko read karta hai
+- Shape (rows x columns) dikhata hai
+- Pehli 3 rows print karta hai
+- File na mile toh error deta hai
+
+
+STEP 2: COLUMN IDENTIFICATION
+──────────────────────────────────────────────────────────
+- Columns ko 2 groups mein baanta hai:
+    Numerical  → numbers wale columns (age, salary, etc.)
+    Categorical → text wale columns (gender, city, etc.)
+- Special Rule: Agar numerical column mein 10 ya kam
+  unique values hain → use categorical treat karta hai
+- Target column alag rakhta hai (predict karna wala)
+
+
+STEP 3: MISSING VALUE HANDLING
+──────────────────────────────────────────────────────────
+- Khali (NaN) values dhundhta hai
+- Numerical columns → MEDIAN se fill karta hai
+- Categorical columns → MODE (sabse zyada aane wali value)
+  se fill karta hai
+- Agar koi missing value nahi → skip kar deta hai
+
+
+STEP 4: ENCODING & SCALING
+──────────────────────────────────────────────────────────
+Encoding (text → number banana):
+  - Low unique values (≤10) → OneHotEncoding
+    Example: gender → gender_Male, gender_Female
+  - High unique values (>10) → LabelEncoding
+    Example: city → 0,1,2,3...
+  - Target column bhi encode hoti hai agar text ho
+
+Scaling (numbers ko same range mein laana):
+  - StandardScaler use hota hai numerical columns pe
+  - Matlab: sab values -3 to +3 ke beech aa jaati hain
+  - Isliye koi ek column doosre pe dominate nahi karta
+
+
+STEP 5: CLEAN CSV EXPORT
+──────────────────────────────────────────────────────────
+- Processed / clean data ko naye CSV mein save karta hai
+- File name: cleaned_data.csv
+- Ye wahi data hai jo model ko diya jayega
+
+
+STEP 6: TASK TYPE DETECT
+──────────────────────────────────────────────────────────
+- Target column dekh ke decide karta hai:
+    CLASSIFICATION → target mein 20 ya kam unique values
+                     (jaise: 0/1, yes/no, cat/dog)
+    REGRESSION     → target mein bahut saari values
+                     (jaise: price, temperature)
+    UNSUPERVISED   → target column nahi hai
+
+
+STEP 7a: CLASSIFICATION MODELS (agar task = classification)
+──────────────────────────────────────────────────────────
+Ye 7 models chalata hai:
+  1. Logistic Regression
+  2. Decision Tree
+  3. Random Forest
+  4. Gradient Boosting
+  5. SVM (SVC)
+  6. K-Nearest Neighbors
+  7. Naive Bayes
+
+Har model ke liye:
+  - Train karta hai → Test karta hai
+  - Test Accuracy dikhata hai
+  - 5-Fold Cross Validation karta hai
+  - Sabse zyada accuracy wala = BEST MODEL
+
+
+STEP 7b: REGRESSION MODELS (agar task = regression)
+──────────────────────────────────────────────────────────
+Ye 7 models chalata hai:
+  1. Linear Regression
+  2. Ridge Regression
+  3. Lasso Regression
+  4. Decision Tree Regressor
+  5. Random Forest Regressor
+  6. Gradient Boosting Regressor
+  7. SVR
+
+Metrics:
+  - R² Score (1.0 = perfect, 0 = bekar)
+  - RMSE (error kitna hai, kam = better)
+  - Sabse zyada R² wala = BEST MODEL
+
+
+STEP 8: UNSUPERVISED MODELS (hamesha chalta hai)
+──────────────────────────────────────────────────────────
+Target column ko ignore karke patterns dhundhta hai:
+
+  KMeans Clustering:
+    - k=2 se k=6 tak try karta hai
+    - Silhouette Score se best k choose karta hai
+
+  Agglomerative Clustering:
+    - n=2 se n=6 tak try karta hai
+    - Tree structure se cluster banata hai
+
+  DBSCAN:
+    - Automatically clusters dhundhta hai
+    - Noise points bhi identify karta hai
+    - Pehle PCA se 2D mein laata hai
+
+  Sabse zyada Silhouette Score = BEST UNSUPERVISED MODEL
+
+
+STEP 9: PICKLE FILE SAVE
+──────────────────────────────────────────────────────────
+- Agar supervised task tha → best classifier/regressor save
+- Agar unsupervised task tha → best KMeans save
+- File name: best_model_<ModelName>.pkl
+
+PKL FILE KYA HOTI HAI:
+  - Trained model ka "frozen" version
+  - Isko load karo → seedha predict karo
+  - Baar baar train karne ki zaroorat nahi
+
+
+PKL FILE KAISE USE KAREIN:
+──────────────────────────────────────────────────────────
+  import pickle
+
+  # Load karo
+  with open("best_model_Logistic_Regression.pkl", "rb") as f:
+      model = pickle.load(f)
+
+  # Naye data pe predict karo
+  result = model.predict([[value1, value2, value3...]])
+  print(result)  # → [0] ya [1] (COVID negative/positive)
+
+
+FINAL OUTPUT FILES:
+──────────────────────────────────────────────────────────
+  cleaned_data.csv              → processed dataset
+  best_model_<Name>.pkl         → best trained model
+
+
+═══════════════════════════════════════════════════════════
